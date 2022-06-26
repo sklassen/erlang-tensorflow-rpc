@@ -68,21 +68,20 @@ int main() {
     if (fn == 0) {
       arg1 = buff[1];
       arg2 = buff[2];
-      fprintf(stderr,"ACC %i calling scale_and_shift %i %i\n",ACC,arg1,arg2);
+      // fprintf(stderr,"calling scale_and_shift %i %i\n",arg1,arg2);
       scale_and_shift(arg1, arg2);
     } else if (fn == 1) {
       arg1 = buff[1];
-      fprintf(stderr,"ACC %i calling scale %i\n",ACC,arg1);
+      // fprintf(stderr,"calling scale %i\n",arg1);
       scale(arg1);
     } else if (fn == 2) {
       arg1 = buff[1];
-      fprintf(stderr,"ACC %i calling shift %i\n",ACC,arg1);
+      // fprintf(stderr,"calling shift %i\n",arg1);
       shift(arg1);
     } else {
       // just exit on unknown function 
       exit(EXIT_FAILURE);
     }
-    fprintf(stderr,"ACC=%i\n",ACC);
     buff[0] = ACC;
     write_cmd(buff, 1);
   }
