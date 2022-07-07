@@ -1,7 +1,6 @@
-First Attempt to Connect between erlang and a c program
+An OTP application with RPC to c.
 ======
-
-An OTP application with RPC in c/cpp.
+Basic RPC between erlang and a c program
 
 Install
 ------
