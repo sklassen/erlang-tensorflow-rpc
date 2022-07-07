@@ -3,16 +3,16 @@ First Attempt to Connect between erlang and a c program
 
 An OTP application with RPC in c/cpp.
 
-# Install
+Install
 ------
 You will need gcc
 
-# Build
+Build
 ------
 
 $ rebar3 shell
 
-# Execute
+Execute
 ------
 
 Model is initialized at 1.
@@ -30,7 +30,7 @@ true
 
 ```
 
-# Development
+Development
 ------
 A suggested .gitignore
 ```
