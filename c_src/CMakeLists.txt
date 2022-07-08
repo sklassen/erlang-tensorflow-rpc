@@ -14,5 +14,10 @@ add_executable (tflite tflite.cxx)
 #target_link_libraries (helloDemo LINK_PUBLIC Hello)
 
 
-install(FILES tflite DESTINATION ${TFLITE_SOURCE_DIR}/../priv)
+install(FILES tflite DESTINATION ${TFLITE_SOURCE_DIR}/../priv 
+       PERMISSIONS
+          OWNER_READ OWNER_EXECUTE OWNER_WRITE
+          GROUP_READ GROUP_EXECUTE
+          WORLD_READ WORLD_EXECUTE
+    )
 
