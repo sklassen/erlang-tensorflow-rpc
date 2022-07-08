@@ -4,7 +4,20 @@ Basic RPC between erlang and a c program
 
 Install
 ------
-You will need gcc
+You will need cmake and gcc
+$ sudo apt-get install cmake gcc
+
+$ git clone https://github.com/tensorflow/tensorflow.git tensorflow_src
+
+$ mkdir tflite_build
+cd tflite_build
+
+$ cmake ../tensorflow_src/tensorflow/lite
+
+$ cmake --build . -j
+
+Expect to see a tflite_build/libtensorflow-lite.a file.
+
 
 Build
 ------
