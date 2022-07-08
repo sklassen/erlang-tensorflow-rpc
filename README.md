@@ -8,7 +8,7 @@ You will need gcc
 
 Build
 ------
-
+$ cmake ./c_src/CMakeLists.txt
 $ rebar3 shell
 
 Execute

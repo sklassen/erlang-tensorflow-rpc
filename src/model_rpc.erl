@@ -9,7 +9,7 @@ start() ->
         ?MODULE,
         spawn(fun() ->
             process_flag(trap_exit, true),
-            Port = open_port({spawn, "./priv/model"}, [{packet, 2}]),
+            Port = open_port({spawn, "./priv/tflite"}, [{packet, 2}]),
             loop(Port)
         end)
     ).
