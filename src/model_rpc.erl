@@ -1,6 +1,6 @@
 -module(model_rpc).
 -export([start/0, start/1, stop/0]).
--export([scale/1, shift/1,scale_and_shift/2]).
+-export([ar/1, mvar/1]).
 -define(TIMEOUT,3000).
 
 start([]) -> start().
@@ -9,23 +9,25 @@ start() ->
         ?MODULE,
         spawn(fun() ->
             process_flag(trap_exit, true),
-            Port = open_port({spawn, "./priv/tflite"}, [{packet, 2}]),
+            Port = open_port({spawn, "./priv/ccpflow"}, [{packet, 2}]),
             loop(Port)
         end)
     ).
 
+ar(X) -> rpc({ar, X}).
+mvar(X) -> rpc({mvar, X}).
+
 stop() ->
     ?MODULE ! stop.
-scale_and_shift(X, Y) -> call_port({scale_and_shift, X, Y}).
-shift(X) -> call_port({shift, X}).
-scale(X) -> call_port({scale, X}).
-call_port(Msg) ->
+
+rpc(Msg) ->
     ?MODULE ! {call, self(), Msg},
     receive
         {?MODULE, Result} ->
             Result
     after ?TIMEOUT
-        -> erlang:error(timeout)
+        -> erlang:error(timeout),
+           ?MODULE ! stop
     end.
 
 loop(Port) ->
@@ -47,8 +49,7 @@ loop(Port) ->
             exit({port_terminated, Reason})
     end.
 
-encode({scale_and_shift, X, Y}) -> [0, X, Y];
-encode({scale, X}) -> [1, X];
-encode({shift, X}) -> [2, X].
+encode({ar, Xs}) -> [1|[X+127||X<-Xs]];
+encode({mvar, Xs}) -> [2|[X+127||X<-Xs]].
 
-decode([Int]) -> Int.
+decode(Ans) -> Ans.
