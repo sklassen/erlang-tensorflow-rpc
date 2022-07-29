@@ -52,4 +52,4 @@ loop(Port) ->
 encode({ar, Xs}) -> [1|[X+127||X<-Xs]];
 encode({mvar, Xs}) -> [2|[X+127||X<-Xs]].
 
-decode(Ans) -> Ans.
+decode(Ans) -> [Y/100||Y<-Ans].
