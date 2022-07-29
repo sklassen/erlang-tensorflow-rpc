@@ -4,6 +4,13 @@
 cmake_minimum_required(VERSION 3.16)
 project (tflite C CXX)
 
+add_subdirectory(
+  "./tensorflow/lite"
+  EXCLUDE_FROM_ALL
+)
+
+set(CMAKE_CXX_STANDARD 14)
+
 # Add executable called "tflite" that is built from the source files
 # "tflite.cxx". The extensions are automatically found.
 add_executable (tflite tflite.cxx)
