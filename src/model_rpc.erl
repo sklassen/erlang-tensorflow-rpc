@@ -9,7 +9,7 @@ start() ->
         ?MODULE,
         spawn(fun() ->
             process_flag(trap_exit, true),
-            Port = open_port({spawn, "./priv/ccpflow"}, [{packet, 2}]),
+            Port = open_port({spawn, "./priv/ccpflow 2> /tmp/ccpflow.log"}, [{packet, 2}]),
             loop(Port)
         end)
     ).

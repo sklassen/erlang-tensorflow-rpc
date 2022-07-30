@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "cppflow/cppflow.h"
+#include "/home/simon/src/github.com/serizba/cppflow/include/cppflow/cppflow.h"
   
 typedef unsigned char byte;
 
@@ -52,21 +52,16 @@ int write_cmd(byte *buf, int len)
   return write_exact(buf, len);
 }
 
-void shift(int x){
-  ACC+=x;
-}
-void scale(int x){
-  ACC*=x;
-}
-
-void scale_and_shift(int x, int y){
-  scale(x);
-  shift(y);
+float scale(int x){
+  return std::tanh((x-127.0)/10);
 }
 
 int main() {
   int fn, arg1, arg2;
   byte buff[100];
+  unsigned int i=0;
+  int n_input = 8;
+  int n_output = 3;
 
   fprintf(stderr,"load Model %s\n","/tmp/tf-ar-a/");
   cppflow::model model("/tmp/tf-ar-a/");
@@ -75,17 +70,17 @@ int main() {
     fn = buff[0];
 
     if (fn == 0) {
-      arg1 = buff[1];
-      arg2 = buff[2];
-      fprintf(stderr,"ACC %i calling scale_and_shift %i %i\n",ACC,arg1,arg2);
-      scale_and_shift(arg1, arg2);
+      fprintf(stderr,"Reload %s\n","xxx");
     } else if (fn == 1) {
-      arg1 = buff[1];
-      fprintf(stderr,"ACC %i calling scale %i\n",ACC,arg1);
-      std::vector<float> v = {-17,14,-10,38,-16,11,-14,15};
-      v[7]=(arg1-127)*1.0;
+      fprintf(stderr,"ar model %i\n",1);
+      std::vector<float> v(n_input);
+      for (i=0;i<n_input;i++) {
+        v[i] = buff[i+1];
+        fprintf(stderr,"ar model %f\n",v[i]);
+      }
       std::transform(v.begin(), v.end(), v.begin(), [](float &f) {
-          return std::tanh(f/10.0);
+          fprintf(stderr,"model scale %f %f\n",f,scale(f));
+          return scale(f);
       });
       
       auto input= cppflow::tensor(v, {1,8});
@@ -96,15 +91,10 @@ int main() {
       std::cerr << "output: " << output[0] << std::endl;
       //auto score = output[0]
       //std::cerr << "score: " << score << std::endl;
-      buff[0] = 50;
-      buff[1] = 25;
-      buff[2] = 25;
-      write_cmd(buff, 3);
-      //scale(arg1);
-    } else if (fn == 2) {
-      arg1 = buff[1];
-      fprintf(stderr,"ACC %i calling shift %i\n",ACC,arg1);
-      shift(arg1);
+      for (i=0;i<n_output;i++) {
+        buff[i] = round(output[0].get_data<float>()[i]*100);
+      }
+      write_cmd(buff, n_output);
     } else {
       // just exit on unknown function 
       exit(EXIT_FAILURE);
