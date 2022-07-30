@@ -91,10 +91,24 @@ int main(int argc, char *argv[])
       show_usage(argv[0]);
       return 0;
     } else if ((arg == "-d") || (arg == "--dir")) {
-      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
-        directory = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
-      } else { // Uh-oh, there was no argument to the directory option.
+      if (i + 1 < argc) {
+        directory = argv[++i];
+      } else {
         std::cerr << "--dir option requires one argument." << std::endl;
+        return 1;
+      }
+    } else if ((arg == "-i") || (arg == "--in")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+        n_input = atoi(argv[++i]); // Increment 'i' so we don't get the argument as the next argv[i].
+      } else { // Uh-oh, there was no argument to the directory option.
+        std::cerr << "--in option requires one argument." << std::endl;
+        return 1;
+      }
+    } else if ((arg == "-o") || (arg == "--out")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+        n_output = atoi(argv[++i]); // Increment 'i' so we don't get the argument as the next argv[i].
+      } else { // Uh-oh, there was no argument to the directory option.
+        std::cerr << "--out option requires one argument." << std::endl;
         return 1;
       }
     } else {
@@ -128,7 +142,7 @@ int main(int argc, char *argv[])
         return scale(f);
       });
 
-      auto input = cppflow::tensor(v, {1, 8});
+      auto input = cppflow::tensor(v, {1, n_input});
       std::cerr << "input: " << input << std::endl;
 
       auto output = model({{"serving_default_dense_Dense1_input:0", input}}, {"StatefulPartitionedCall:0"});

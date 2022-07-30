@@ -1,6 +1,6 @@
 -module(model_rpc).
 -export([start/0, start/1, stop/0]).
--export([ar/1, mvar/1]).
+-export([reload/0,score/1, terminate/0]).
 -define(TIMEOUT,3000).
 
 start([]) -> start().
@@ -14,8 +14,9 @@ start() ->
         end)
     ).
 
-ar(X) -> rpc({ar, X}).
-mvar(X) -> rpc({mvar, X}).
+reload() -> rpc({reload}).
+score(X) -> rpc({score, X}).
+terminate() -> rpc({exit}).
 
 stop() ->
     ?MODULE ! stop.
@@ -49,7 +50,8 @@ loop(Port) ->
             exit({port_terminated, Reason})
     end.
 
-encode({ar, Xs}) -> [1|[X+127||X<-Xs]];
-encode({mvar, Xs}) -> [2|[X+127||X<-Xs]].
+encode({reload}) -> [0];
+encode({score, Xs}) -> [1|[X+127||X<-Xs]];
+encode({exit}) -> [2].
 
 decode(Ans) -> [Y/100||Y<-Ans].
