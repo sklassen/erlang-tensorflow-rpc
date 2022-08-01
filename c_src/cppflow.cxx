@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 {
   int fn, arg1, arg2;
   byte buff[100];
-  unsigned int i = 0;
+  int i = 0;
   int n_input = 8;
   int n_output = 3;
 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
       write_cmd(buff, n_output);
     } else if (fn == 1) {
       std::cerr << "got exit" << std::endl;
-      return 0;
+      break;
     } else {
       // just exit on unknown function
       exit(EXIT_FAILURE);

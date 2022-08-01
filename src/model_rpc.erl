@@ -1,34 +1,30 @@
 -module(model_rpc).
 -export([start/0, start/1, stop/0]).
--export([reload/0,score/1, terminate/0]).
+-export([reload/1,score/2, terminate/1]).
 -define(TIMEOUT,3000).
 
 start([]) -> start().
 start() ->
-    register(
-        ?MODULE,
-        spawn(fun() ->
-            process_flag(trap_exit, true),
-            Port = open_port({spawn, "./priv/ccpflow -d /tmp/tf-ar-a/ 2> /tmp/ccpflow.log"}, [{packet, 2}]),
-            loop(Port)
-        end)
-    ).
+    spawn(fun() ->
+        process_flag(trap_exit, true),
+        Port = open_port({spawn, "./priv/ccpflow -d /tmp/tf-ar-a/ 2> /tmp/ccpflow.log"}, [{packet, 2}]),
+        loop(Port)
+    end).
 
-reload() -> rpc({reload}).
-score(X) -> rpc({score, X}).
-terminate() -> rpc({exit}).
+reload(Pid) -> rpc(Pid,{reload}).
+score(Pid,X) -> rpc(Pid,{score, X}).
+terminate(Pid) -> rpc(Pid,{exit}).
 
 stop() ->
     ?MODULE ! stop.
 
-rpc(Msg) ->
-    ?MODULE ! {call, self(), Msg},
+rpc(Pid,Msg) ->
+    Pid ! {call, self(), Msg},
     receive
-        {?MODULE, Result} ->
+        {Pid, Result} ->
             Result
     after ?TIMEOUT
-        -> erlang:error(timeout),
-           ?MODULE ! stop
+        -> erlang:error(timeout)
     end.
 
 loop(Port) ->
@@ -37,7 +33,7 @@ loop(Port) ->
             Port ! {self(), {command, encode(Msg)}},
             receive
                 {Port, {data, Data}} ->
-                    Caller ! {?MODULE, decode(Data)}
+                    Caller ! {self(), decode(Data)}
             end,
             loop(Port);
         stop ->
